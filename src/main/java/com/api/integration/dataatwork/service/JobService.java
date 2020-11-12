@@ -1,6 +1,9 @@
 package com.api.integration.dataatwork.service;
 
+import com.api.integration.dataatwork.helper.ApiErrorHandler;
 import com.api.integration.dataatwork.model.JobDetail;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,8 @@ import static java.util.stream.Collectors.joining;
 
 @Service
 public class JobService {
+    private RestTemplateBuilder restTemplateBuilder;
+
     public JobDetail getJobs(String skillId) {
         final String uri = "http://api.dataatwork.org/v1/skills/" +
                 skillId +
@@ -34,13 +39,17 @@ public class JobService {
                 })
                 .collect(joining("&", uri, ""));
 
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplateBuilder restTemplateBuilder = null;
+        RestTemplate restTemplate = restTemplateBuilder
+                .errorHandler(new ApiErrorHandler())
+                .build();
+                //new RestTemplate();
         ResponseEntity<JobDetail> response =
                 restTemplate.exchange(encodedURL, HttpMethod.GET, null, JobDetail.class);
 
         return response.getBody();
     }
-
+    
     private String encodeValue(String value) throws UnsupportedEncodingException {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
