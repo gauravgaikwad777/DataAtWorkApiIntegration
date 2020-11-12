@@ -2,6 +2,7 @@ package com.api.integration.dataatwork.manager;
 
 import com.api.integration.dataatwork.model.JobDetail;
 import com.api.integration.dataatwork.service.JobService;
+import com.api.integration.dataatwork.service.RequestBinService;
 import com.api.integration.dataatwork.service.SkillService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +15,13 @@ import org.springframework.web.client.HttpClientErrorException;
 public class JobManager {
 
     @Autowired
+    SkillService skillService;
+
+    @Autowired
     JobService jobService;
 
     @Autowired
-    SkillService skillService;
+    RequestBinService requestBinService;
 
     Logger logger = LoggerFactory.getLogger(JobManager.class);
 
@@ -28,7 +32,11 @@ public class JobManager {
                 return new JobDetail();
             }
 
-            return jobService.getJobs(skillId);
+            JobDetail jobDetail = jobService.getJobs(skillId);
+
+            requestBinService.postJobs(jobDetail);
+
+            return jobDetail;
         } catch (HttpClientErrorException hsee) {
             logger.error(hsee.getMessage());
             return new JobDetail(hsee.getStatusCode().toString(), hsee.getMessage());
