@@ -32,4 +32,4 @@ http://localhost:8080/api/jobs
 _________
 Please Check the API output here:
 
-http://requestbin.net/r/1q0tnpq1?inspect
+http://requestbin.net/r/12r3rpt1?inspect
