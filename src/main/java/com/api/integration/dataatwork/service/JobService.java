@@ -1,6 +1,8 @@
 package com.api.integration.dataatwork.service;
 
 import com.api.integration.dataatwork.model.JobDetail;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,27 +18,21 @@ import static java.util.stream.Collectors.joining;
 
 @Service
 public class JobService {
+    @Autowired
+    private Environment env;
+
     public JobDetail getJobs(String skillId) {
-        final String uri = "http://api.dataatwork.org/v1/skills/" +
+
+        String dataatworkApiUrl = env.getProperty("dataatworkAPI.url");
+
+        final String uri = dataatworkApiUrl +
+                "skills/"+
                 skillId +
                 "/related_jobs";
 
-        Map<String, String> requestParams = new HashMap<>();
-
-        String encodedURL = requestParams.keySet().stream()
-                .map(key -> {
-                    try {
-                        return key + "=" + encodeValue(requestParams.get(key));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    return key;
-                })
-                .collect(joining("&", uri, ""));
-
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<JobDetail> response =
-                restTemplate.exchange(encodedURL, HttpMethod.GET, null, JobDetail.class);
+                restTemplate.exchange(uri, HttpMethod.GET, null, JobDetail.class);
 
         return response.getBody();
     }

@@ -27,13 +27,17 @@ public class JobManager {
 
     public JobDetail getJobsForSkill(String skill) {
         try {
+
+            //Get Skill ID for the skill name
             String skillId = skillService.getSkillId(skill);
             if (StringUtils.isEmpty(skillId)) {
                 return new JobDetail();
             }
 
+            //Get Jobs for the Skill ID
             JobDetail jobDetail = jobService.getJobs(skillId);
 
+            //Pass all Jobs to the third party RequestBin.net service
             requestBinService.postJobs(jobDetail);
 
             return jobDetail;

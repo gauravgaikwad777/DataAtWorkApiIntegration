@@ -2,7 +2,9 @@ package com.api.integration.dataatwork.service;
 
 import com.api.integration.dataatwork.model.Skills;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,15 @@ import static java.util.stream.Collectors.joining;
 @Service
 public class SkillService {
 
-    public String getSkillId(String skill) {
-        final String uri = "http://api.dataatwork.org/v1/skills/autocomplete?";
+    @Autowired
+    private Environment env;
 
+    public String getSkillId(String skill) {
+        String dataatworkApiUrl = env.getProperty("dataatworkAPI.url");
+
+        final String uri = dataatworkApiUrl + "skills/autocomplete?";
+
+        //Pass skill name as param
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("contains", skill);
 
@@ -37,15 +45,18 @@ public class SkillService {
                 })
                 .collect(joining("&", uri, ""));
 
+        //API call to Data AT Work Skills Autocomplete API
         RestTemplate restTemplate = new RestTemplate();
         ParameterizedTypeReference<List<Skills>> skills = new ParameterizedTypeReference<List<Skills>>() {
         };
 
+        //Skills API response to get skill details
         ResponseEntity<List<Skills>> response =
                 restTemplate.exchange(encodedURL, HttpMethod.GET, null, skills);
         if (response.getBody().isEmpty()) {
             return Strings.EMPTY;
         }
+
         return response.getBody().get(0).getUuid();
 
     }
