@@ -26,8 +26,6 @@ public class JobManager {
     Logger logger = LoggerFactory.getLogger(JobManager.class);
 
     public JobDetail getJobsForSkill(String skill) {
-        try {
-
             //Get Skill ID for the skill name
             String skillId = skillService.getSkillId(skill);
             if (StringUtils.isEmpty(skillId)) {
@@ -41,9 +39,5 @@ public class JobManager {
             requestBinService.postJobs(jobDetail);
 
             return jobDetail;
-        } catch (HttpClientErrorException hsee) {
-            logger.error(hsee.getMessage());
-            return new JobDetail(hsee.getStatusCode().toString(), hsee.getMessage());
-        }
     }
 }
