@@ -19,7 +19,7 @@ public class RequestBinService {
         String requestbinApiKeyProd = env.getProperty("requestbinAPI.prod.key");
         String requestbinApiKeyDev = env.getProperty("requestbinAPI.dev.key");
 
-        final String uri = requestbinApiUrl + requestbinApiKeyDev;
+        final String uri = requestbinApiUrl + requestbinApiKeyProd;
 
         //Setting up the request headers
         HttpHeaders requestHeaders = new HttpHeaders();
